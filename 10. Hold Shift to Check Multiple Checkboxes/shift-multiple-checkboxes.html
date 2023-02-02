@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Hold Shift to Check Multiple Checkboxes</title>
+    </head>
+    <body>
+        <style>
+
+            html {
+                font-family: sans-serif;
+                background: #ffc600;
+            }
+
+            .inbox {
+                max-width: 400px;
+                margin: 50px auto;
+                background: white;
+                border-radius: 5px;
+                box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .item {
+                display: flex;
+                align-items: center;
+                border-bottom: 1px solid #F1F1F1;
+            }
+
+            .item:last-child {
+                border-bottom: 0;
+            }
+
+            input:checked + p {
+                background: #F9F9F9;
+                text-decoration: line-through;
+            }
+
+            input[type="checkbox"] {
+                margin: 20px;
+            }
+
+            p {
+                margin: 0;
+                padding: 20px;
+                transition: background 0.2s;
+                flex: 1;
+                font-family: 'helvetica neue';
+                font-size: 20px;
+                font-weight: 200;
+                border-left: 1px solid #D1E2FF;
+            }
+
+            .button {
+                border: 0;
+                line-height: 2.5;
+                padding: 0 20px;
+                font-size: 1rem;
+                text-align: center;
+                color: #fff;
+                text-shadow: 1px 1px 1px #000;
+                border-radius: 10px;
+                background-color: rgba(220, 0, 0, 1);
+                background-image: linear-gradient(to top left, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) 30%, rgba(0, 0, 0, 0));
+                box-shadow: inset 2px 2px 3px rgba(255, 255, 255, 0.6), inset -2px -2px 3px rgba(0, 0, 0, 0.6);
+            }
+
+            .button:hover {
+                background-color: rgba(255, 0, 0, 1);
+            }
+
+            .buton:active {
+                box-shadow: inset -2px -2px 3px rgba(255, 255, 255, 0.6), inset 2px 2px 3px rgba(0, 0, 0, 0.6);
+            }
+
+        </style>
+
+
+        <!--
+        The following is a common layout you would see in an email client.
+        When a user clicks a checkbox, holds Shift, and then clicks another checkbox a few rows down, all the checkboxes inbetween those two checkboxes should be checked.
+        -->
+
+        <div class="buttons">
+            <button type="button" class="button" onclick=displayMessage()>Reset Selection</button>
+        </div>
+
+        <div class="inbox">
+            <div class="item">
+                <input type="checkbox">
+                <p>This is an inbox layout.</p>
+            </div>
+            <div class="item">
+                <input type="checkbox">
+                <p>Check one item</p>
+            </div>
+            <div class="item">
+                <input type="checkbox">
+                <p>Hold down your Shift key</p>
+            </div>
+            <div class="item">
+                <input type="checkbox">
+                <p>Check a lower item</p>
+            </div>
+            <div class="item">
+                <input type="checkbox">
+                <p>Everything in between should also be set to checked</p>
+            </div>
+            <div class="item">
+                <input type="checkbox">
+                <p>Try to do it without any libraries</p>
+            </div>
+            <div class="item">
+                <input type="checkbox">
+                <p>Just regular JavaScript</p>
+            </div>
+            <div class="item">
+                <input type="checkbox">
+                <p>Good Luck!</p>
+            </div>
+            <div class="item">
+                <input type="checkbox">
+                <p>Don't forget to tweet your result!</p>
+            </div>
+        </div>
+
+        <script>
+            const checkboxes = document.querySelectorAll('.item input[type="checkbox"]');
+            // console.log(checkboxes);
+
+            let previousChecked = null;
+            let lastChecked = null;
+            
+            function handleCheck(e) {
+
+                // Verify if the item is set to unchecked
+                // If it was set to unchecked, then assign the previous item to the last item
+                if (!this.checked) {
+                    if (this === lastChecked) {
+                        console.log('This was the last checked');
+                        lastChecked = previousChecked;
+                    }
+                    console.log('Unchecked');
+                    return;
+                }
+
+                previousChecked = lastChecked;
+                lastChecked = this;
+                
+                // Check if they had the shift key down
+                // And check that a previous item exists
+                let inBetween = false;
+                
+                if (e.shiftKey && previousChecked != null) {
+                    // go ahead and do what we please
+                    // loop over every single checkbox
+                    checkboxes.forEach(checkbox => {
+                        console.log(checkbox);
+                        if (checkbox === previousChecked || checkbox === lastChecked) {
+                            inBetween = !inBetween;
+                            console.log('Starting to check them in between');
+                        }
+
+                        if (inBetween) {
+                            checkbox.checked = true;
+                        }
+                    });
+                }
+
+            }
+
+            checkboxes.forEach(checkbox => checkbox.addEventListener('click', handleCheck));
+
+            function displayMessage() {
+                performReset = confirm('Reset list?');
+                if (performReset) {
+                    checkboxes.forEach(checkbox => {checkbox.checked = false});
+                }
+            }
+
+        </script>
+    </body>
+</html>
