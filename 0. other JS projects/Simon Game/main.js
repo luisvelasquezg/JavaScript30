@@ -17,6 +17,13 @@ const sound_yellow = document.querySelector(`[data-sound = "yellow"`);
 
 /*### 2. Build our functions ###*/
 
+/* Variables */
+const numberOfTiles = tiles.length; // Number of tiles in the board
+let isGameRunning = false;
+let stopGame = false;
+let restartGame = false;
+
+
 function pressTile(event, eventType) {
     // console.log(event);
     // const audio = document.querySelector(`audio[data-sound="${event.dataset.tile}"]`);
@@ -208,12 +215,18 @@ function generateRandomSequence(numSequences, numTiles) {
     return sequenceArray;
 }
 
-const numberOfTiles = tiles.length;
+
 
 function startGame() {
+    // if (isGameRunning) stopGame = true;
+    // isGameRunning = false;
+
+    restartGame = true;
+
     console.log('Starting game...');
+
     // let sequence = [redTile, greenTile, blueTile, yellowTile, yellowTile, redTile];
-    let numberOfSequences = 10;
+    let numberOfSequences = 6;
     // let numberOfTiles = tiles.length;
     let sequence = generateRandomSequence(numberOfSequences, numberOfTiles);
     console.log('sequence:');
@@ -222,8 +235,10 @@ function startGame() {
     let i = 0;
     // console.log(sequence[3]);
 
+    restartGame = false;
+    
     function runner() {
-        if (i >= sequence.length) return;
+        if (i >= sequence.length || restartGame) return;
         let element = sequence[i];
         activateSequence(element);
         setTimeout(runner, 1000);
@@ -231,6 +246,9 @@ function startGame() {
     }
     
     runner();
+
+    isGameRunning = false;
+    stopGame = false;
 
 /*
     sequence.forEach((element) => {

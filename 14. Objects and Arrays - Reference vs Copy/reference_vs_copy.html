@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS Reference VS Copy</title>
+</head>
+<body>
+
+    <script>
+
+        // Start with strings, numbers and booleans
+        console.log('##### NUMBERS #####');
+        let age = 100;
+        let age2 = age;
+        console.log(age, age2);
+        
+        age = 200;
+        console.log(age, age2);
+
+
+
+
+        console.log('\n##### STRINGS #####');
+        let name = 'Wes';
+        let name2 = name;
+        console.log(name, name2);
+        
+        name = 'Wesley';
+        console.log(name, name2);
+
+
+        
+
+        // Let's say we have an array
+        console.log('\n##### ARRAYS #####');
+        const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+
+        // and we want to make a copy of it.
+        const team = players;
+        console.log('(players, team)', players, team);
+
+        // You might think we can just do something like this
+        // and it will update only the 'team' variable
+        team[3] = 'Lux';
+        console.log('players, team(edited)', players, team);
+        
+        // However, what happens is that both variables are modified (the original and the reference one)
+        // This happens because is an array reference, not an array copy.
+        // They both point to the same array!
+        players[2] = 'Emily';
+        console.log('players(edited), team', players, team);
+
+        // To fix this, we take a copy instead:
+        const team2 = players.slice();
+        const team3 = [].concat(players);
+        const team4 = [...players]; // new ES6 Spread
+        const team5 = Array.from(players);
+
+
+
+        console.log('\n-----------------');
+        console.log('Using .slice()');
+        printVariables('players', 'team2', isEdited = false);
+        team2[3] = 'John';
+        printVariables('players', 'team2', isEdited = true, firstObjectEdited = false);
+
+
+        console.log('\n-----------------');
+        console.log('Using concat');
+        printVariables('players', 'team3', isEdited = false);
+        team3[2] = 'Paul';
+        printVariables('players', 'team3', isEdited = true, firstObjectEdited = false);
+
+
+        console.log('\n-----------------');
+        console.log('Using ES6 Spread');
+        printVariables('players', 'team4', isEdited = false);
+        team4[1] = 'Arnold';
+        printVariables('players', 'team4', isEdited = true, firstObjectEdited = false);
+
+
+        console.log('\n-----------------');
+        console.log('Using Array.from()');
+        printVariables('players', 'team5', isEdited = false);
+        team5[0] = 'Mary';
+        printVariables('players', 'team5', isEdited = true, firstObjectEdited = false);
+
+
+
+
+        // The same thing goes for objects, let's say we have a person object
+        console.log('\n##### OBJECTS #####');
+        console.log('-----------------------\nMaking a reference');
+        
+        const person = {
+            name: 'Wes Bos',
+            age: 80
+        };
+
+
+        // and think we make a copy
+        const captain = person;
+        printVariables('person', 'captain', isEdited = false);
+        captain.number = 99;
+        printVariables('person', 'captain', isEdited = true, firstObjectEdited = false);
+
+        person.name = 'Wesley Bos';
+        printVariables('person', 'captain', isEdited = true, firstObjectEdited = true);
+
+
+        // How to make a copy instead?
+        console.log('\n-----------------------\nMaking a copy');
+        const cap2 = Object.assign({}, person, { year_of_birth: 1875, age: 12 }); // (recipient, source, params)
+        printVariables('person', 'cap2', isEdited = false);
+
+        cap2.name = 'Morgan';
+        printVariables('person', 'cap2', isEdited = true, firstObjectEdited = false);
+
+        person.number = 5;
+        printVariables('person', 'cap2', isEdited = true, firstObjectEdited = true);
+
+
+        // NOTE:
+        // This is only 1 level deep - both for Arrays and Objects.
+        console.log('-------------------------')
+
+        const wes = {
+            name: 'Wes',
+            age: 100,
+            social: {
+                twitter: '@wesbos',
+                facebook: 'wesbos.developter'
+            }
+        };
+
+        console.log('wes', wes);
+
+        const dev = Object.assign({}, wes);
+        printVariables('wes', 'dev', isEdited = false);
+
+        dev.social.twitter = '@coolman';
+        console.log('wes.social', wes.social);
+        console.log('dev.social', dev.social);
+        printVariables('wes', 'dev', isEdited = true, firstObjectEdited = false);
+
+
+        // To make a copy of an Object, we can do this:
+        const dev2 = JSON.parse(JSON.stringify(wes));
+
+        printVariables('wes', 'dev2', isEdited = false);
+
+        dev2.social.twitter = '@wesbos2';
+        console.log('wes.social', wes.social);
+        console.log('dev2.social', dev2.social);
+
+
+
+
+
+
+
+        // function looseJsonParse(obj) {
+        //     return eval?.(`"use strict";(${obj})`);
+        // }
+        // console.log(looseJsonParse("{ a: 4 - 1, b: function () {}, c: new Date() }"));        
+
+        function getVariable(obj) {
+            return eval?.(`"use strict";(${obj})`);
+        }
+
+
+        function printVariables(objectNameA, objectNameB, isEdited = false, firstObjectEdited = false) {
+            const editedTag = '(edited)';
+            let objectAEditedTag = '';
+            let objectBEditedTag = '';
+
+            if (isEdited) {
+                if (firstObjectEdited) {
+                    objectAEditedTag = editedTag;
+                } else {
+                    objectBEditedTag = editedTag;
+                }
+            }
+
+            console.log(
+                `${objectNameA}${objectAEditedTag}, ${objectNameB}${objectBEditedTag}`,
+                getVariable(objectNameA), getVariable(objectNameB)
+            );
+        }
+
+        
+
+    </script>
+    
+</body>
+</html>
