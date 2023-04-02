@@ -19,15 +19,56 @@ const sound_yellow = document.querySelector(`[data-sound = "yellow"`);
 
 /* Variables */
 const numberOfTiles = tiles.length; // Number of tiles in the board
+let audioPlaying;
 let isGameRunning = false;
 let stopGame = false;
 let restartGame = false;
 
 
+function playSound(tileElement) {
+    tileColor = tileElement.dataset.tile;
+
+    switch (tileColor) {
+        case 'red':
+            // audio = sound_red;
+            audioPlaying = sound_red;
+            tileElement.classList.add('playing-red');
+            break;
+
+        case 'green':
+            // audio = sound_green;
+            audioPlaying = sound_green;
+            tileElement.classList.add('playing-green');
+            break;
+
+        case 'blue':
+            // audio = sound_blue;
+            audioPlaying = sound_blue;
+            tileElement.classList.add('playing-blue');
+            break;
+
+        case 'yellow':
+            // audio = sound_yellow;
+            audioPlaying = sound_yellow;
+            tileElement.classList.add('playing-yellow');
+            break;
+    
+        default:
+            break;
+    }
+
+    if(!audioPlaying) return;
+    audioPlaying.currentTime = 0   // rewind to the start
+    audioPlaying.play();
+    audioPlaying = null;
+}
+
+
 function pressTile(event, eventType) {
     // console.log(event);
     // const audio = document.querySelector(`audio[data-sound="${event.dataset.tile}"]`);
-    console.log(event);
+    // console.log(event);
+    
     tileColor = event.dataset.tile;
     console.log(`Tile: ${tileColor}`);
     
@@ -38,57 +79,64 @@ function pressTile(event, eventType) {
     }
 
     // console.log(`Event type: ${event.type}`);
-    let audio;
-    switch (tileColor) {
-        case 'red':
-            audio = sound_red;
-            event.classList.add('playing-red');
-            break;
+    // let audio;
+    // switch (tileColor) {
+    //     case 'red':
+    //         // audio = sound_red;
+    //         audioPlaying = sound_red;
+    //         event.classList.add('playing-red');
+    //         break;
 
-        case 'green':
-            audio = sound_green;
-            event.classList.add('playing-green');
-            break;
+    //     case 'green':
+    //         // audio = sound_green;
+    //         audioPlaying = sound_green;
+    //         event.classList.add('playing-green');
+    //         break;
 
-        case 'blue':
-            audio = sound_blue;
-            event.classList.add('playing-blue');
-            break;
+    //     case 'blue':
+    //         // audio = sound_blue;
+    //         audioPlaying = sound_blue;
+    //         event.classList.add('playing-blue');
+    //         break;
 
-        case 'yellow':
-            audio = sound_yellow;
-            event.classList.add('playing-yellow');
-            break;
+    //     case 'yellow':
+    //         // audio = sound_yellow;
+    //         audioPlaying = sound_yellow;
+    //         event.classList.add('playing-yellow');
+    //         break;
     
-        default:
-            break;
-    }
+    //     default:
+    //         break;
+    // }
 
-    if(!audio) return;
-    audio.currentTime = 0   // rewind to the start
-    audio.play();
+    // if(!audio) return;
+    // audio.currentTime = 0   // rewind to the start
+    // audio.play();
+    
+    playSound(event);
 }
 
 function removeTransition(e, tile) {
     if (e.propertyName !== "transform") return; // skip it if it's not a transform
-    console.log(e.propertyName);
-    console.log("Removing Transition:");
-    console.log(e);
+    // console.log('Removing Transition...');
+    // console.log(e.propertyName);
+    // console.log("Removing Transition:");
+    // console.log(e);
 
     tileColor = tile.dataset.tile;
     switch (tileColor) {
         case 'red':
-            audio = sound_red;
+            // audio = sound_red;
             tile.classList.remove('playing-red');
             break;
 
         case 'green':
-            audio = sound_green;
+            // audio = sound_green;
             tile.classList.remove('playing-green');
             break;
 
         case 'blue':
-            audio = sound_blue;
+            // audio = sound_blue;
             tile.classList.remove('playing-blue');
             break;
 
@@ -113,7 +161,7 @@ const getRandomNumber2 = (min, max) => {
 
 
 function activateSequence(e) {
-    console.log('Activating sequence');
+    // console.log('Activating sequence');
     // console.log(e);
     // console.log(`getRandomNumber = ${getRandomNumber2(2, 13)}`);
     // let x = Math.random(max - min)
@@ -123,40 +171,11 @@ function activateSequence(e) {
     // }, 2000);
 
     tileColor = e.dataset.tile;
-    console.log(`Tile: ${tileColor}`);
+    // console.log(`Tile: ${tileColor}`);
     
     e.classList.add('playing');
-
-    // console.log(`Event type: ${event.type}`);
-    let audio = null;
-    switch (tileColor) {
-        case 'red':
-            audio = sound_red;
-            e.classList.add('playing-red');
-            break;
-
-        case 'green':
-            audio = sound_green;
-            e.classList.add('playing-green');
-            break;
-
-        case 'blue':
-            audio = sound_blue;
-            e.classList.add('playing-blue');
-            break;
-
-        case 'yellow':
-            audio = sound_yellow;
-            e.classList.add('playing-yellow');
-            break;
     
-        default:
-            break;
-    }
-
-    if(!audio) return;
-    audio.currentTime = 0   // rewind to the start
-    audio.play();
+    playSound(e);
 }
 
 
@@ -199,7 +218,8 @@ runner();
 function getRandomTile(tilesNumber) {
     // console.log(`min: ${min}\nnumTiles: ${numTiles}`);
     tilePosition =  Math.floor(Math.random() * (tilesNumber));
-    console.log(`tilePosition: ${tilePosition}`);
+    // console.log(`tilePosition: ${tilePosition}`);
+
     return tiles.item(tilePosition);
 };
 
@@ -212,16 +232,30 @@ function generateRandomSequence(numSequences, numTiles) {
         nextTile = getRandomTile(numTiles);
         sequenceArray.push(nextTile);
     }
+
     return sequenceArray;
 }
 
+function runner() {
+        if (i >= sequence.length || (restartGame && isGameRunning)) {
+            restartGame = false;
+            isGameRunning = false;
+            return;
+        }
+        let element = sequence[i];
+        activateSequence(element);
+        setTimeout(runner, 1000);
+        i++;
+    }
 
 
 function startGame() {
     // if (isGameRunning) stopGame = true;
     // isGameRunning = false;
 
-    restartGame = true;
+    if (isGameRunning) {
+        restartGame = true;
+    }
 
     console.log('Starting game...');
 
@@ -231,41 +265,35 @@ function startGame() {
     let sequence = generateRandomSequence(numberOfSequences, numberOfTiles);
     console.log('sequence:');
     console.log(sequence);
-    // let sequence = 
+
     let i = 0;
-    // console.log(sequence[3]);
-
-    restartGame = false;
+    runner3();
+    isGameRunning = true;
+    console.log('isGameRunning:', isGameRunning);
+    console.log('restartGame:', restartGame);
+    // function runner3() {
+    //     if (i >= sequence.length || (restartGame && isGameRunning)) {
+    //         restartGame = false;
+    //         isGameRunning = false;
+    //         return;
+    //     }
+    //     let element = sequence[i];
+    //     activateSequence(element);
+    //     setTimeout(runner3, 1000);
+    //     i++;
+    // }
     
-    function runner() {
-        if (i >= sequence.length || restartGame) return;
-        let element = sequence[i];
-        activateSequence(element);
-        setTimeout(runner, 1000);
-        i++;
+    if (1 == 1) {
+        console.log('before runner');
+        // runner();
+        console.log('after runner');
     }
+
+    console.log('isGameRunning:', isGameRunning);
+    console.log('restartGame:', restartGame);
     
-    runner();
-
-    isGameRunning = false;
-    stopGame = false;
-
-/*
-    sequence.forEach((element) => {
-        i++;
-        console.log(i);
-        console.log(element);
-        // setTimeout(activateSequence, 2000, element);
-        if (i <= sequence.length) {
-            function runner() {
-                activateSequence(element);
-                window.setTimeout(runner, 1000);
-            }
-            runner();    
-        }
-
-    });
-*/    
+    // isGameRunning = false;
+    // stopGame = false;
 
 
 }
@@ -277,8 +305,12 @@ function startGame() {
 
 startButton.addEventListener('click', () => {
     console.log('Starting...');
+    // console.log('this:');
+    // console.log(this);
     startGame();
 });
+
+// startButton.addEventListener()
 
 // testButton.addEventListener('click', () => {
 //     console.log('Test button pressed');
@@ -313,7 +345,7 @@ tiles.forEach((tile) => {
     // console.log('List of Tiles:', redTile, greenTile, blueTile, yellowTile)
     
     tile.addEventListener('click', (e) => {
-        console.log(`click event type: ${e.type}`);
+        // console.log(`click event type: ${e.type}`);
         pressTile(tile, e.type)
     });
 
@@ -321,11 +353,6 @@ tiles.forEach((tile) => {
         removeTransition(e, tile);
     })
 });
-
-
-// tiles.forEach(tile => {
-//     console.log(tile.dataset.tile);
-// });
 
 
 document.addEventListener('keypress', (e) => {
@@ -355,10 +382,12 @@ document.addEventListener('keypress', (e) => {
             pressTile(yellowTile, e.type);
             break;
             
-        // case 'Enter':
-        // case 'NumpadEnter':
-        //     startGame();
-        //     break;
+        // Start Game
+        case 'Enter':
+        case 'NumpadEnter':
+        case 'Space':
+            startGame();
+            break;
 
         default:
             break;
@@ -368,18 +397,4 @@ document.addEventListener('keypress', (e) => {
     console.log(`${e.key} key pressed (${e.code})`);
 });
 
-/*
-function myFunction() {
-    console.log('myFunction');
-    console.log(myButton);
-}
 
-let myButton = document.querySelector('#myLabel');
-*/
-
-// document.addEventListener('click', (e) => {
-//     console.log(`Prueba: ${e.type}`);
-//     pressTile(e);
-// });
-
-// startGame();
